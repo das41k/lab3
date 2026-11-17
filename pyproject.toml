@@ -1,0 +1,19 @@
+[project]
+name = "banking-protocol"
+version = "0.3.0"
+description = "Banking client-server protocol with AES-GCM protected exchange (LR3)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cryptography>=43.0",
+    "pydantic-settings>=2.6",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

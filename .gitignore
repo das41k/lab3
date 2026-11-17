@@ -1,0 +1,28 @@
+# Окружения и кеши
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Секреты: .env и локальное хранилище ключей НИКОГДА не попадают в Git
+.env
+.env.*
+!.env.example
+keys/
+*.pem
+*.key
+*.p12
+*.jks
+
+# Журналы
+logs/
+*.log
+
+# ОС / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
