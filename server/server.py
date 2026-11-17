@@ -41,7 +41,11 @@ from protocol.messages import (
 from protocol.secure import BankingProtocol
 from service.order_service import OrderService
 
-logger = logging.getLogger(__name__)
+# См. комментарий в client/client.py: при запуске через ``-m`` имя модуля
+# становится ``__main__``, поэтому логгер именуется явно.
+LOGGER_NAME = "server.server"
+
+logger = logging.getLogger(LOGGER_NAME)
 
 
 def _nonce_tag(nonce: bytes) -> str:
@@ -327,7 +331,7 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = get_settings()
-    setup_logging("server.server", settings)
+    setup_logging(LOGGER_NAME, settings)
     logger.info("Конфигурация: %s", settings.safe_summary())
 
     server = BankingServer(settings)

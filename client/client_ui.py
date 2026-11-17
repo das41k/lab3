@@ -422,7 +422,10 @@ class BankingClientUI:
 
 
 def main() -> None:
-    setup_logging("client.client_ui", get_settings())
+    settings = get_settings()
+    setup_logging("client.client_ui", settings)
+    # BankingClient журналирует через отдельный логгер client.client.
+    setup_logging("client.client", settings)
     root = tk.Tk()
     BankingClientUI(root)
     root.mainloop()

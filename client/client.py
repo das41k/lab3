@@ -33,7 +33,12 @@ from protocol.messages import (
 )
 from protocol.secure import BankingProtocol
 
-logger = logging.getLogger(__name__)
+# Имя логгера задаётся явно: при запуске ``python -m client.client``
+# модуль выполняется как ``__main__``, и ``__name__`` не совпал бы с именем,
+# которое настраивает setup_logging().
+LOGGER_NAME = "client.client"
+
+logger = logging.getLogger(LOGGER_NAME)
 
 
 def _nonce_tag(nonce: bytes) -> str:
@@ -348,7 +353,7 @@ def _show_response(
 
 def main() -> None:
     settings = get_settings()
-    setup_logging("client.client", settings)
+    setup_logging(LOGGER_NAME, settings)
     logger.info("Конфигурация: %s", settings.safe_summary())
 
     with BankingClient(settings) as client:
