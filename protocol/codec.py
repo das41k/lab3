@@ -1,11 +1,3 @@
-"""Кадрирование сообщений поверх TCP.
-
-Протокол использует построчный JSON: одно сообщение — одна строка,
-завершающаяся '\\n'. Класс :class:`MessageFramer` инкапсулирует буфер и
-контроль максимального размера, защищая сервер от слишком больших
-входящих сообщений.
-"""
-
 from __future__ import annotations
 
 import socket
@@ -46,12 +38,6 @@ class MessageFramer:
         self._sock.sendall(frame)
 
     def recv(self) -> bytes | None:
-        """Читает один кадр.
-
-        Возвращает ``None`` при штатном закрытии соединения. Пустые строки
-        пропускаются. При превышении лимита выбрасывает
-        :class:`MessageTooLargeError`.
-        """
         while True:
             newline = self._buffer.find(b"\n")
             if newline >= 0:

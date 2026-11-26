@@ -1,13 +1,3 @@
-"""Симметричное шифрование AES-256-GCM (AEAD).
-
-Используется промышленная библиотека ``cryptography`` — собственная
-реализация AES запрещена условиями ЛР3.
-
-Каждое сообщение получает новый случайный nonce (12 байт). Для каждого
-ключа ведётся учёт использованных nonce; повторное использование
-обнаруживается и приводит к :class:`NonceReuseError`.
-"""
-
 from __future__ import annotations
 
 import os
@@ -40,12 +30,6 @@ class SealedPayload:
 
 
 class NonceTracker:
-    """Ограниченный по размеру реестр использованных nonce.
-
-    Ключ учёта — пара (key_id, nonce). При переполнении вытесняются самые
-    старые записи (FIFO), что ограничивает потребление памяти.
-    """
-
     def __init__(self, max_entries: int = 100_000) -> None:
         self._seen: OrderedDict[tuple[str, bytes], None] = OrderedDict()
         self._lock = threading.Lock()
@@ -82,9 +66,6 @@ class CryptoService:
     ) -> None:
         self._keys = key_manager
         self._strict = strict_nonce_check
-        # Раздельные реестры: исходящие nonce (шифрование) и входящие
-        # (расшифрование). Это позволяет одной стороне проверять replay,
-        # не конфликтуя с собственными исходящими сообщениями.
         self._outgoing_nonces = nonce_tracker or NonceTracker()
         self._incoming_nonces = incoming_nonce_tracker or NonceTracker()
 
@@ -119,11 +100,6 @@ class CryptoService:
         key_id: str | None = None,
         nonce: bytes | None = None,
     ) -> SealedPayload:
-        """Шифрует ``plaintext`` и возвращает nonce/ciphertext/tag.
-
-        ``nonce`` можно передать явно только для тестов/экспериментов;
-        повторное использование nonce с тем же ключом будет отклонено.
-        """
         resolved_key_id = key_id or self.current_key_id
         key = self._keys.key_for(resolved_key_id)
 
@@ -159,12 +135,6 @@ class CryptoService:
         aad: bytes = b"",
         key_id: str | None = None,
     ) -> bytes:
-        """Проверяет tag и расшифровывает сообщение.
-
-        При изменении ciphertext/nonce/tag/AAD выбрасывает
-        :class:`AuthenticationError`. Повторно полученный nonce (replay)
-        обнаруживается после успешной аутентификации.
-        """
         if len(nonce) != NONCE_SIZE:
             raise AuthenticationError("некорректная длина nonce")
         if len(tag) != TAG_SIZE:

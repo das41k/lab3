@@ -171,12 +171,6 @@ def build_aad(
     kind: MessageKind,
     key_id: str,
 ) -> bytes:
-    """Формирует AAD (Additional Authenticated Data) для конверта.
-
-    AAD не шифруется, но его целостность защищается authentication tag.
-    Длина каждого поля кодируется явно, чтобы избежать неоднозначности
-    при склейке строк.
-    """
     def part(value: str) -> bytes:
         raw = value.encode("utf-8")
         return len(raw).to_bytes(4, "big") + raw
@@ -424,13 +418,6 @@ class Response(ProtocolMessage):
 
 @dataclass(frozen=True, kw_only=True)
 class EncryptedMessage(ProtocolMessage):
-    """Зашифрованный конверт, передаваемый по TCP.
-
-    Поля ``version``, ``request_id``, ``kind`` и ``key_id`` остаются
-    открытыми, но аутентифицируются через AAD. ``nonce`` не является
-    секретом и передаётся вместе с ciphertext/tag.
-    """
-
     key_id: str
     nonce: bytes
     ciphertext: bytes
